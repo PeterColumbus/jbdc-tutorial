@@ -1,0 +1,35 @@
+Create table Customer(
+id int auto_increment primary key,
+name varchar(50) not null,
+gender enum('MALE', 'FEMALE') not null,
+address varchar(100) not null,
+email varchar(30) not null check (email like '%@%'),
+phone varchar(20) not null,
+priority boolean not null
+);
+
+create table Kartukredit(
+idkartu int primary key,
+name varchar(30) not null,
+jenis enum('SILVER', 'GOLD', 'PLATINUM') not null,
+exp date not null,
+limitt int not null,
+idowner int not null,
+foreign key (idowner) references customer(id));
+
+insert into customer(name, gender, address, email, phone, priority)
+values ('budi', 'male', 'bekasi', 'budi@gmail.com', '123456789', 0),
+('siti', 'female', 'jakarta', 'siti@gmail.com', '123456789', 1),
+('agnes', 'female', 'jakarta', 'agnes@gmail.com', '123456789', 0),
+('ron', 'male', 'cipondoh', 'ron@gmail.com', '123456789', 1);
+
+insert into kartukredit(idkartu, name, jenis, exp, limitt, idowner)
+values (1111122 ,"kevin", "Silver" ,"2023-02-01" , 5000000 , 1),
+(1111133 ,"kevin", "Gold" ,"2023-03-01" , 7500000 , 1),
+(1112211 ,"baim", "Gold" ,"2023-03-01" , 7500000 , 2),
+(1112222 ,"baim", "Silver" ,"2023-04-01" , 5000000 , 2),
+(1113311 ,"budi", "Gold" ,"2023-04-01" , 7500000 , 3),
+(1113322 ,"budi", "Silver" ,"2023-05-01" , 5000000 , 3),
+(1114411 ,"siti", "Platinum" ,"2023-02-01" , 10000000 , 4),
+(1114422 ,"siti", "Silver" ,"2023-03-01" , 5000000 , 4),
+(1114433 ,"siti", "Gold" ,"2023-04-01" , 7500000 , 4);
