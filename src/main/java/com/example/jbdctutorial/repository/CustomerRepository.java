@@ -1,11 +1,16 @@
 package com.example.jbdctutorial.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
+import com.example.jbdctutorial.entity.Customer;
+import com.example.jbdctutorial.entity.KartuKredit;
 
 @Repository
 public class CustomerRepository {
@@ -25,21 +30,72 @@ public class CustomerRepository {
 	}
 	*/
 	
-	public List<Customer> selectAllCustomers(){
-		String sql = "" +
-				"SELECT id, name, gender, address, email, phone, priority FROM customer";
+	public List<Customer> selectAllCustomers(String gender, String name, Boolean prior, int id){
 		
-		return jdbcTemplate.query(sql, mapCustomerFromDb());
+		StringBuilder sql = new StringBuilder("SELECT id, name, gender, address, email, phone, priority FROM customer");
+		sql.append(" WHERE 1=1");
+		List<Object> param = new ArrayList<>();
+		boolean flag = false;
+		
+		if(StringUtils.hasText(gender)) {
+			sql.append(" AND gender = ?");
+			param.add(gender);
+			flag = true;
+		}
+		if(StringUtils.hasText(name)) {
+			sql.append(" AND name = ?");
+			param.add(name);
+			flag = true;
+		}
+		if(!StringUtils.isEmpty(prior)) {
+			sql.append(" AND priority = ?");
+			param.add(prior);
+			flag = true;
+		}
+		if(id != 0) {
+			sql.append(" AND id = ?");
+			param.add(id);
+			flag = true;
+		}
+		if(flag)
+			return jdbcTemplate.query(sql.toString(), param.toArray() , mapCustomerFromDb());
+		else
+			return jdbcTemplate.query(sql.toString(), mapCustomerFromDb());
 	}
 	
-	public List<Customer> selectAllCustomersP(int lim, int page){
+	public List<Customer> selectAllCustomersP(int lim, int page, String gender, String name, Boolean prior, int id){
 		int off = lim * (page - 1);
-		String sql = "" +
-				"SELECT id, name, gender, address, email, phone, priority FROM customer Limit "+ off + ", " + lim;
-		return jdbcTemplate.query(sql, mapCustomerFromDb());
+		//String sql = "SELECT id, name, gender, address, email, phone, priority FROM customer Limit "+ off + ", " + lim;
+		
+		StringBuilder sql = new StringBuilder("SELECT id, name, gender, address, email, phone, priority FROM customer");
+		sql.append(" WHERE 1=1");
+		
+		List<Object> param = new ArrayList<>();
+		
+		if(StringUtils.hasText(gender)) {
+			sql.append(" AND gender = ?");
+			param.add(gender);
+		}
+		if(StringUtils.hasText(name)) {
+			sql.append(" AND name = ?");
+			param.add(name);
+		}
+		if(!StringUtils.isEmpty(prior)) {
+			sql.append(" AND priority = ?");
+			param.add(prior);
+		}
+		if(id != 0) {
+			sql.append(" AND id = ?");
+			param.add(id);
+		}
+		sql.append(" limit ? , ?");
+		param.add(off);
+		param.add(lim);
+		
+		return jdbcTemplate.query(sql.toString(), param.toArray() ,mapCustomerFromDb());
 	}
 	
-	
+	/*
 	public List<Customer> selectCustomerById(int id){
 		String sql = "" +
 				"SELECT id, name, gender, address, email, phone, priority FROM customer "
@@ -71,6 +127,7 @@ public class CustomerRepository {
 		
 		return jdbcTemplate.query(sql, mapCustomerFromDb());
 	}
+	*/
 	
 	public int insertCustomer(Customer customer) {
 		String sql = ""+
@@ -156,20 +213,76 @@ public class CustomerRepository {
         };
     }
 	
-	public List<KartuKredit> selectAllCC(){
-		String sql = "" +
-				"SELECT idkartu, name, jenis, exp, limitt, idowner FROM kartukredit";
+	public List<KartuKredit> selectAllCC(int id_kartu, String jenis, int limit, int id_owner){
+		//String sql = "SELECT idkartu, name, jenis, exp, limitt, idowner FROM kartukredit";
 		
-		return jdbcTemplate.query(sql, mapCCFromDb());
+		StringBuilder sql = new StringBuilder("SELECT idkartu, name, jenis, exp, limitt, idowner FROM kartukredit");
+		sql.append(" WHERE 1=1");
+		
+		List<Object> param = new ArrayList<>();
+		boolean flag=false;
+		
+		if(StringUtils.hasText(jenis)) {
+			sql.append(" AND jenis = ?");
+			param.add(jenis);
+			flag=true;
+		}
+		if(id_kartu != 0) {
+			sql.append(" AND idkartu = ?");
+			param.add(id_kartu);
+			flag=true;
+		}
+		if(id_owner != 0) {
+			sql.append(" AND idowner = ?");
+			param.add(id_owner);
+			flag=true;
+		}
+		if(limit != 0) {
+			sql.append(" AND limitt = ?");
+			param.add(limit);
+			flag=true;
+		}
+		
+		if(flag)
+			return jdbcTemplate.query(sql.toString(), param.toArray(), mapCCFromDb());
+		else
+			return jdbcTemplate.query(sql.toString(), mapCCFromDb());
 	}
 	
-	public List<KartuKredit> selectAllCCP(int lim, int page){
+	public List<KartuKredit> selectAllCCP(int lim, int page, int id_kartu, String jenis, int limit, int id_owner){
 		int off = lim * (page - 1);
-		String sql = "" +
-				"SELECT idkartu, name, jenis, exp, limitt, idowner FROM kartukredit Limit "+ off + ", " + lim;
-		return jdbcTemplate.query(sql, mapCCFromDb());
+		//String sql = "" + "SELECT idkartu, name, jenis, exp, limitt, idowner FROM kartukredit Limit "+ off + ", " + lim;
+		
+		StringBuilder sql = new StringBuilder("SELECT idkartu, name, jenis, exp, limitt, idowner FROM kartukredit");
+		sql.append(" WHERE 1=1");
+		List<Object> param = new ArrayList<>();
+		
+		if(StringUtils.hasText(jenis)) {
+			sql.append(" AND jenis = ?");
+			param.add(jenis);
+		}
+		if(id_kartu != 0) {
+			sql.append(" AND idkartu = ?");
+			param.add(id_kartu);
+		}
+		if(id_owner != 0) {
+			sql.append(" AND idowner = ?");
+			param.add(id_owner);
+		}
+		if(limit != 0) {
+			sql.append(" AND limitt = ?");
+			param.add(limit);
+		}
+		sql.append(" limit ? , ?");
+		param.add(off);
+		param.add(lim);
+		
+		
+		return jdbcTemplate.query(sql.toString(), param.toArray(),mapCCFromDb());
+		
 	}
 	
+	/*
 	public List<KartuKredit> selectAllCCById(int id){
 		String sql = "" +
 				"SELECT idkartu, name, jenis, exp, limitt, idowner FROM kartukredit where idowner= "+ id;
@@ -197,6 +310,7 @@ public class CustomerRepository {
 		
 		return jdbcTemplate.query(sql, mapCCFromDb());
 	}
+	*/
 	
 	public int insertCC(KartuKredit cc) {
 		String sql = ""+

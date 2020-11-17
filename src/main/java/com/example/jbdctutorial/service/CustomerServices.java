@@ -1,5 +1,8 @@
 package com.example.jbdctutorial.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.example.jbdctutorial.repository.Customer;
+import com.example.jbdctutorial.Paging;
+import com.example.jbdctutorial.PagingCC;
+import com.example.jbdctutorial.entity.Customer;
+import com.example.jbdctutorial.entity.KartuKredit;
 import com.example.jbdctutorial.repository.CustomerRepository;
-import com.example.jbdctutorial.repository.KartuKredit;
 
 @Service
 public class CustomerServices {
@@ -21,14 +26,21 @@ public class CustomerServices {
 		this.customerRepository = customerRepository;
 	}
 	
-	public List<Customer> getAllCustomers(){
-		return customerRepository.selectAllCustomers();
+	/*
+	public List<Customer> getAllCustomers(String gender, String name, Boolean prior, int id){
+		return customerRepository.selectAllCustomers(gender, name, prior, id);
+	}
+	*/
+	
+	public Paging getAllCustomersP(int lim, int page, String gender, String name, Boolean prior, int id){
+		double total_data = customerRepository.selectAllCustomers(gender, name, prior, id).size();
+		List<Customer> datas = customerRepository.selectAllCustomersP(lim, page, gender, name, prior, id);
+		double total_page = Math.ceil(total_data/lim);
+		
+		return new Paging(page, (int)total_page , (int)total_data, datas);
 	}
 	
-	public List<Customer> getAllCustomersP(int limit, int page){
-		return customerRepository.selectAllCustomersP(limit, page);
-	}
-	
+	/*
 	public List<Customer> getCustomerById(int id){
 		return customerRepository.selectCustomerById(id);
 	}
@@ -44,6 +56,8 @@ public class CustomerServices {
 	public List<Customer> getCustomerByPriority(int prior){
 		return customerRepository.selectCustomerByPrior(prior);
 	}
+	*/
+	
 	
 	public void addNewCustomer(Customer customer) {
 		customerRepository.insertCustomer(customer);
@@ -78,14 +92,21 @@ public class CustomerServices {
 		
 	}
 	
+	/*
 	public List<KartuKredit> getAllCC(){
 		return customerRepository.selectAllCC();
 	}
+	*/
 	
-	public List<KartuKredit> getAllCCP(int limit, int page){
-		return customerRepository.selectAllCCP(limit, page);
+	public PagingCC getAllCCP(int lim, int page, int id_kartu, String jenis, int limit, int id_owner){
+		double total_data = customerRepository.selectAllCC(id_kartu, jenis, limit, id_owner).size();
+		List<KartuKredit> datas = customerRepository.selectAllCCP(lim, page, id_kartu, jenis, limit, id_owner);
+		double total_page = Math.ceil(total_data/lim);
+		
+		return new PagingCC(page, (int)total_page , (int)total_data, datas);
 	}
 	
+	/*
 	public List<KartuKredit> getAllCCbyId(int id){
 		return customerRepository.selectAllCCById(id);
 	}
@@ -101,6 +122,7 @@ public class CustomerServices {
 	public List<KartuKredit> getAllCCbyNocc(int var){
 		return customerRepository.selectAllCCByNocc(var);
 	}
+	*/
 	
 	public void addNewCC(KartuKredit cc) {
 		customerRepository.insertCC(cc);
@@ -135,6 +157,60 @@ public class CustomerServices {
 		}
 		if(cc.getIdowner()!=0) {
 			customerRepository.updateCCidowner(id, cc.getIdowner());
+		}
+	}
+	
+	public boolean genderChecking(String var) {
+		if(var.compareToIgnoreCase("male")== 0 || var.compareToIgnoreCase("female")== 0) {
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	public boolean jenisChecking(String var) {
+		if(var.compareToIgnoreCase("platinum")== 0 || var.compareToIgnoreCase("gold")== 0 || var.compareToIgnoreCase("silver")== 0) {
+			return true;
+		}
+		else
+			return false;
+	}
+	public boolean emailChecking(String var) {
+		if(var.contains("@"))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean dateChecking(String strDate){
+		/* Check if date is 'null' */
+		if (strDate.trim().equals(""))
+		{
+		    return false;
+		}
+		/* Date is not 'null' */
+		else
+		{
+		    /* Set preferred date format,
+		     * For example MM-dd-yyyy, MM.dd.yyyy,dd.MM.yyyy etc.*/
+		    SimpleDateFormat sdfrmt = new SimpleDateFormat("yyyy-MM-dd");
+		    sdfrmt.setLenient(false);
+		    /* Create Date object
+		     * parse the string into date 
+	             */
+		    try
+		    {
+		        Date javaDate = sdfrmt.parse(strDate); 
+		        //System.out.println(strDate+" is valid date format");
+		    }
+		    /* Date format is invalid */
+		    catch (ParseException e)
+		    {
+		        //System.out.println(strDate+" is Invalid Date format");
+		        return false;
+		    }
+		    /* Return true if date format is valid */
+		    return true;
 		}
 	}
 }

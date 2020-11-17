@@ -1,4 +1,4 @@
-package com.example.jbdctutorial.repository;
+package com.example.jbdctutorial.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
