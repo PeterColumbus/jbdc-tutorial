@@ -1,2 +1,2 @@
-# jbdc-tutorial
+# jbdc-template
  
